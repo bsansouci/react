@@ -50,14 +50,19 @@ var ReactNativeComponentInjection = {
  * @return {function} The React class constructor function.
  */
 function getComponentClassForElement(element) {
-  if (typeof element.type === 'function') {
+  // If element.type doesn't have a render function, we assume it's a
+  // stateless component and continue as usual. autoGenerateWrapperClass will
+  // take care of wrapping it properly
+  if (typeof element.type === 'function' && element.type.prototype.render) {
     return element.type;
   }
+
   var tag = element.type;
   var componentClass = tagToComponentClass[tag];
   if (componentClass == null) {
     tagToComponentClass[tag] = componentClass = autoGenerateWrapperClass(tag);
   }
+
   return componentClass;
 }
 
