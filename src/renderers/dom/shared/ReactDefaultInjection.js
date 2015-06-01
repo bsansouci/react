@@ -49,23 +49,6 @@ var SVGDOMPropertyConfig = require('SVGDOMPropertyConfig');
 var createFullPageComponent = require('createFullPageComponent');
 
 function autoGenerateWrapperClass(type) {
-  // If type is a function, it should be a stateless component (i.e. it is the
-  // render function and needs to be wrapped in a constructor)
-  if(typeof type === 'function') {
-    if(!type.prototype.render) {
-      console.log("Waning - `"+type.name+"` is a function. Assuming it's the render function of a stateless component.");
-      return ReactClass.createClass({
-        displayName: type.name,
-        render: function() {
-          return type(this.props);
-        }
-      });
-    } else {
-      // This should be filtered out before in getComponentClassForElement
-      console.error("This should not happen. Got a class constructor in autoGenerateWrapperClass.");
-    }
-  }
-
   return ReactClass.createClass({
     tagName: type.toUpperCase(),
     render: function() {

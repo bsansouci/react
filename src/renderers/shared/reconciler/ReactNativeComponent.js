@@ -13,6 +13,8 @@
 
 var assign = require('Object.assign');
 var invariant = require('invariant');
+var ReactComponent = require('ReactComponent');
+var ReactClass = require("ReactClass");
 
 var autoGenerateWrapperClass = null;
 var genericComponentClass = null;
@@ -53,8 +55,19 @@ function getComponentClassForElement(element) {
   // If element.type doesn't have a render function, we assume it's a
   // stateless component and continue as usual. autoGenerateWrapperClass will
   // take care of wrapping it properly
-  if (typeof element.type === 'function' && element.type.prototype.render) {
+  if (typeof element.type === 'function' && element.type.prototype instanceof ReactComponent) {
     return element.type;
+  } else if(typeof element.type === 'function') {
+    var type = element.type;
+    // If type is a function, it should be a stateless component (i.e. it is
+    // the render function and needs to be wrapped in a constructor)
+    console.log("Waning - `"+type.name+"` is a function. Assuming it's the render function of a stateless component.");
+    return ReactClass.createClass({
+      displayName: type.name,
+      render: function() {
+        return type(this.props);
+      }
+    });
   }
 
   var tag = element.type;
